@@ -83,18 +83,15 @@ func GetCommunityPostIDsInOrder(p *models.ParamPostList) ([]string, error) {
 	cKey := getRedisKey(KeyCommunitySetPF + strconv.Itoa(int(p.CommunityID)))
 	key := orderKey + ":" + strconv.Itoa(int(p.CommunityID))
 
-	if client.Exists(key).Val() == 0 {
-		// 如果不存在需要计算
-		pipe := client.Pipeline()
-		pipe.ZInterStore(key, redis.ZStore{
-			Weights:   []float64{1, 0},
-			Aggregate: "Max",
-		}, orderKey, cKey)
-		pipe.Expire(key, 60*time.Second)
-		_, err := pipe.Exec()
-		if err != nil {
-			return nil, err
-		}
+	// 如果不存在需要计算
+	pipe := client.Pipeline()
+	pipe.ZInterStore(key, redis.ZStore{
+		Aggregate: "MAX",
+	}, cKey, orderKey)
+	pipe.Expire(key, 60*time.Second)
+	_, err := pipe.Exec()
+	if err != nil {
+		return nil, err
 	}
 
 	return GetIDsFromKey(key, p.Page, p.Size)
