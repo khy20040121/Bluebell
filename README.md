@@ -15,7 +15,7 @@
 - 帖子列表 (支持按时间或热度排序)
 - 帖子投票 (使用 Redis ZSet 实现排行榜)
 
-## 快速开始 (推荐)
+## 快速开始 
 
 使用 Docker Compose 可以一键启动完整环境（前端、后端、数据库）。
 
@@ -27,8 +27,7 @@
    ```
 
 3. 访问服务：
-   - 前端页面: http://localhost (或服务器 IP)
-   - 后端接口: http://localhost:8080
+   - http://8.152.218.178
 
 ## 本地开发
 
@@ -48,16 +47,6 @@
 
 1. 进入 frontend 目录：
 
-   ```bash
-   cd frontend
-   ```
-
-2. 安装依赖并启动：
-
-   ```bash
-   npm install
-   npm run dev
-   ```
 
 ## 目录结构
 
@@ -72,4 +61,3 @@
 ## 文档
 
 - 接口文档: 请参考 `API.md`
-- 部署指南: 请参考 `Deployment_Guide.md`
