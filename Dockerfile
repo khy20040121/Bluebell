@@ -5,7 +5,7 @@ FROM golang:1.22-alpine AS builder
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装基础依赖
-RUN apk add --no-cache git ca-certificates
+RUN apk add --no-cache git ca-certificates tzdata
 
 # 设置 Go 编译相关环境变量
 ENV GO111MODULE=on \
@@ -33,13 +33,18 @@ RUN go build -o bluebell .
 # ================== 运行阶段（最小镜像） ==================
 FROM alpine:latest
 
-# 安装 ca 证书
+# 安装 ca 证书 和 时区数据 (修正时间显示问题)
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-    && apk add --no-cache ca-certificates
+    && apk add --no-cache ca-certificates tzdata
+
+# 设置时区为上海
+ENV TZ=Asia/Shanghai
 
 WORKDIR /app
 
 COPY --from=builder /build/bluebell .
+# 关键修复：必须拷贝配置文件，否则程序启动会报错找不到 config.yaml
+COPY config ./config
 
 EXPOSE 8080
 
