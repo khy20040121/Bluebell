@@ -57,16 +57,18 @@ func GetPostVoteList(ids []string) (data []int64, err error) {
 	for _, id := range ids {
 		key := getRedisKey(KeyPostVotedZSetPF + id)
 		pipe.ZCount(key, "1", "1")
+		pipe.ZCount(key, "-1", "-1")
 	}
 	cmders, err := pipe.Exec()
 	if err != nil {
 		return
 	}
 
-	data = make([]int64, 0, len(cmders))
-	for _, cmder := range cmders {
-		v := cmder.(*redis.IntCmd).Val()
-		data = append(data, int64(v))
+	data = make([]int64, 0, len(ids))
+	for i := 0; i < len(cmders); i += 2 {
+		v1 := cmders[i].(*redis.IntCmd).Val()
+		v2 := cmders[i+1].(*redis.IntCmd).Val()
+		data = append(data, v1-v2)
 	}
 	return
 }
