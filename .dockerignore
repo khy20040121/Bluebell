@@ -11,7 +11,7 @@
 .DS_Store
 
 # 构建产物
-bluebell
+# bluebell
 *.log
 
 # 本地数据
